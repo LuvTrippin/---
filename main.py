@@ -1,68 +1,41 @@
 import math
 
-# 1 Task
-num = 3846.15
-rnum = num
-rnum /= 10
-rnum = round(rnum) * 10
-DELTA = abs(rnum - num)
-delta = DELTA / abs(rnum)
-print("Задача 1")
-print(f"Абсолютная погрешность: {DELTA}, Относительая погрешность: {delta}", end="\n\n")
 
-# 2 Task
-DELTA = abs(-0.0351) * 13.4/100
-print("Задача 2")
-print(f"Абсолютная погрешность: {DELTA}", end="\n\n")
+def calc_omega(x: float, X: list) -> float:
+    omega = 1
+    for i in X:
+        omega *= (x-i)
+    return omega
 
-# 3 Task
-DELTA = 0.0048
-X = 0.54325
-X1 = 0.54325 + 0.0048
-X2 = 0.54325 - 0.0048
-ans1 = str(round(X - X1, 5)).count("0")
-ans2 = str(round(X - X2, 5)).count("0")
-print("Задача 3")
-print(f"Количество верных цифр в X1: {ans1}, количество верных цифр в X2: {ans2}", end="\n\n")
 
-# 4 Task
+def calc_d_omega(x: float, X: list) -> float:
+    d_omega = 1
+    for i in X:
+        if i != x:
+            d_omega *= (x-i)
+    return d_omega
 
-X = 0.07281
-delta = 1.43/100
 
-DELTA = X * delta
+def calc_c(new_X: list, X: list) -> list:
+    c = list()
+    for k in X:
+        c.append(sum([calc_omega(i, X) / ((i - k) * calc_d_omega(k, X)) for i in new_X])*h)
+    return c
 
-X1 = X + DELTA
-X2 = X - DELTA
 
-ans1 = str(round(X - X1, 9)).count("0")
-ans2 = str(round(X - X2, 9)).count("0")
-print("Задача 4")
-print(f"Количество верных цифр в X1: {ans1}, количество верных цифр в X2: {ans2}", end="\n\n")
+def calc_integral(new_x: list, xi: list) -> float:
+    c = calc_c(new_x, xi)
+    I = sum([c[i] * f[i] for i in range(5)])
+    return I
 
-# 5 Task
 
-X = 0.487
-Xt = 0.490
-F = math.exp(2*X) * math.sin(2*X)
-Ft = math.exp(2*Xt) * math.sin(2*Xt)
-dF = 2*math.exp(2*Xt)*math.sin(2*Xt) + 2*math.cos(2*Xt)*math.exp(2*Xt)
-d = dF*0.003
-rF = Ft + d
-DELTA = abs(F - rF)
-delta = DELTA/F
-print("Задача 5")
-print(f"Абсолютная погрешность: {DELTA}, Относительная погрешность: {delta*100}%", end="\n\n")
-
-# 6 Task
-
-x1 = 1.463
-x2 = 3.747
-x3 = 2.368
-
-F = math.sin(x1) + x2*x3
-DELTA = 0.002 * abs(math.cos(x1)) + 0.003 * x3 + 0.002 * x2
-delta = DELTA/abs(F)
-print("Задача 6")
-print(f"Абсолютная погрешность: {DELTA}, Относительная погрешность: {delta*100}%")
-
+a, b = 0.2, 1
+step = 0.2
+N = 10000
+h = (b - a)/N
+x = [0.2, 0.4, 0.6, 0.8, 1]
+xi = [a+i*h for i in range(N+1)]
+x_new = [i - 0.5*h for i in xi]
+f = [1/i for i in x]
+print(calc_integral(x_new, x))
+print(abs(calc_integral(x_new, x) - (-math.log(0.2))))
